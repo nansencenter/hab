@@ -16,8 +16,9 @@
             Date.prototype.toYYYYMMDDString = function () {return isNaN (this) ? 'NaN' : [this.getFullYear(), this.getMonth() > 8 ? this.getMonth() + 1 : '0' + (this.getMonth() + 1), this.getDate() > 9 ? this.getDate() : '0' + this.getDate()].join('-')}
             
             var cdate = new Date().getTime();
-            var pdate = new Date(cdate - 7 * 24 * 60 * 60 * 1000);
+            var pdate = new Date(cdate - 6 * 24 * 60 * 60 * 1000);
             var pdateStr = pdate.toYYYYMMDDString();
+            document.getElementById("tomcat").href += "&time=" + pdateStr; 
             
             map = new OpenLayers.Map({
                 div: "map",
@@ -64,7 +65,7 @@
     </p>
 
 <div id=l3link style='position: absolute; top:120; left: 750px; width: 400px; text-align:center; border: 1px solid gray'>
-<a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">
+<a id=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">
     <img src=images/l3viewer.png width=300>
     <h2> View series of water quality maps in the <b>L3 viewer</b></h2>
 </a>
