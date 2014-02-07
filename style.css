@@ -89,6 +89,35 @@ h6 {
 #docs p {
     margin-bottom: 0.5em;
 }
+
+#title {
+    text-align: center;
+    margin: 10px;
+    color: #5555ff;
+    padding: 15px 10px 0 210px;
+    width: 800px;
+    height: 110px;
+    font-size: 22;
+    background-image:url('images/nersc.png');
+    background-repeat:no-repeat;
+    border-bottom: 0;
+}
+
+table, th, td {
+    border: 1px solid #55aaff;
+}
+table {
+    width: 400px;
+    font-size: 16;
+}
+th {
+    background-color: #55aaff;
+    color:white;
+}
+td {
+    width: 200px;
+    height: 30px;
+}
 /* mobile specific */
 @media only screen and (max-width: 600px) {
     body {

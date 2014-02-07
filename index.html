@@ -18,7 +18,8 @@
             var cdate = new Date().getTime();
             var pdate = new Date(cdate - 6 * 24 * 60 * 60 * 1000);
             var pdateStr = pdate.toYYYYMMDDString();
-            document.getElementById("tomcat").href += "&time=" + pdateStr; 
+            tomcats = document.getElementsByName("tomcat")
+            for (i=0; i < tomcats.length; i += 1) tomcats[i].href += "&time=" + pdateStr; 
             
             map = new OpenLayers.Map({
                 div: "map",
@@ -33,13 +34,7 @@
                          transparent: true,
                          time: pdateStr} );
 
-            var sst = new OpenLayers.Layer.WMS( "SST",
-                    "http://tomcat.nersc.no:8080/ncWMS/wms",
-                        {layers: 'hab_7d/SST',
-                         transparent: true,
-                         time: pdateStr} );
-            
-            map.addLayers([osm, sst, chlor]);
+            map.addLayers([osm, chlor]);
             map.setBaseLayer(osm);
 
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
@@ -57,24 +52,33 @@
     </style>
 </head>
 <body onload="init()">
-    <img src=images/hablogo.png>
+    <h1 id=title>Near Real-Time Algal Bloom and Water Quality Monitoring Service<br>for the North Sea and Scagerrak Region Provided by NERSC</h1>
 
     <div id="map" class="smallmap"></div>
     <p id="shortdesc" style='margin-top:0; font-size: 15'>
-        The latest weekly average of Chlorophyll-a and SST from MODIS-AQUA
+        <b>Interactive map</b> with the latest weekly average of Chlorophyll-a from MODIS-AQUA
     </p>
 
-<div id=l3link style='position: absolute; top:120; left: 750px; width: 400px; text-align:center; border: 1px solid gray'>
-<a id=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">
-    <img src=images/l3viewer.png width=300>
-    <h2> View series of water quality maps in the <b>L3 viewer</b></h2>
-</a>
-</div>
+<div id=l3link style='position: absolute; top:120; left: 750px; width: 400px'>
+<h1> View time series of products </h1>
+<table style='border: 1px solid'>
+    <tr>
+        <th>Daily</th><th>Weekly</th>
+    </tr>
+    <tr>
+        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></td>
+        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></td>
+    </tr>
+    <tr>
+        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></td>
+        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></td>
+    </tr>
+    <tr>
+        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></td>
+        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></td>
+    </tr>
 
-<div id=l2link style='position: absolute; top:345; left: 750px; width: 400px; text-align:center; border: 1px solid gray'>
-<a href=http://web.nersc.no/project/maires/sadweb.py?catalog=MODIS_STD&show_CHL=on>
-    <img src=images/l2viewer.png width=300> <h2>Find files used for generation of the maps in the <b>L2 viewer</b> </h2>
-</a>
+</table>
 </div>
 
 <div id=text style='width: 500px ; border: 1px solid gray'>
@@ -88,16 +92,20 @@
     The EO based service concept is based on both standard products and of in-house processing algorithms tuned to regional water conditions, providing information about the surface distribution of:
     </p>
     <ul>
-        <li>Chlorophyll-a</li>
-        <li>Yellow substance</li>
-        <li>Light attenuation Kd490</li>
-        <li>Sea surface temperature</li>
+        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></li>
+        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></li>
+        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></li>
     </ul>
     <p>    
-    All data products are generated as daily images, binned 7days and monthly composites - the two latter in order to reduce the impact of the cloud cover limitation.
+    All data products are generated as <a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">daily images</a> and <a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">weekly averages</a> (in order to reduce the impact of the cloud cover limitation.)
     </p>
+    
+    <p>You can find files used for generation of the maps in the <a href=http://web.nersc.no/project/maires/sadweb.py?catalog=MODIS_STD&show_CHL=on> L2 viewer</a></p>
+
     <p>For further information contact <a href='mailto:lasse.pettersson@nersc.no'>lasse.pettersson(at)nersc.no</a></p>
 </div>
+
+
 
 </body>
 </html>
