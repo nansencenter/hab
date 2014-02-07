@@ -40,6 +40,17 @@
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
             map.addControl( new OpenLayers.Control.LayerSwitcher() );
         }
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-43252602-2']);
+      _gaq.push(['_trackPageview']);
+    
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
     </script>
 
 
@@ -52,7 +63,7 @@
     </style>
 </head>
 <body onload="init()">
-    <h1 id=title>Near Real-Time Algal Bloom and Water Quality Monitoring Service<br>for the North Sea and Scagerrak Region Provided by NERSC</h1>
+    <h1 id=title>Near Real-Time Algal Bloom and Water Quality Monitoring Service<br>for the North Sea and Skagerrak Provided by NERSC</h1>
 
     <div id="map" class="smallmap"></div>
     <p id="shortdesc" style='margin-top:0; font-size: 15'>
