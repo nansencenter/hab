@@ -4,12 +4,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="style.css" type="text/css">
 
+<!-- CALENDAR HEADER -->
+<link rel='stylesheet' type='text/css' href='http://web.nersc.no/project/maires/JSCal2/css/jscal2.css' />
+<script type='text/javascript' src='http://web.nersc.no/project/maires/JSCal2/js/jscal2.js'></script>
+<script type='text/javascript' src='http://web.nersc.no/project/maires/JSCal2/js/lang/en.js'></script>
+<!-- END OF CALENDAR HEADER -->
+
     <script src="ol/OpenLayers.js"></script>
     <script type="text/javascript">
         var lon = 0;
         var lat = 60;
         var zoom = 5;
         var map;
+        var chlor;
+        var sst;
 
         function init(){
 
@@ -23,23 +31,40 @@
             
             map = new OpenLayers.Map({
                 div: "map",
-                allOverlays: true
+                //allOverlays: true
             });
 
-            var osm = new OpenLayers.Layer.WMS( "OSM", "http://129.206.228.72/cached/osm/service?", {layers: 'osm_auto:all'});
+            var osm = new OpenLayers.Layer.WMS( "OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'});
 
-            var chlor = new OpenLayers.Layer.WMS( "Chlorophyll-a",
+            chlor = new OpenLayers.Layer.WMS( "Chlorophyll-a",
                     "http://tomcat.nersc.no:8080/ncWMS/wms",
                         {layers: 'hab_7d/chlor_a',
                          transparent: true,
                          time: pdateStr} );
 
-            map.addLayers([osm, chlor]);
+            sst = new OpenLayers.Layer.WMS( "SST",
+                    "http://tomcat.nersc.no:8080/ncWMS/wms",
+                        {layers: 'hab_7d/SST',
+                         transparent: true,
+                         time: pdateStr} );
+
+            sst.setVisibility(false);
+
+            map.addLayers([osm, chlor, sst]);
             map.setBaseLayer(osm);
 
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
             map.addControl( new OpenLayers.Control.LayerSwitcher() );
+            
+            OpenLayers.Util.getElement('calendar-inputForm1').value = pdateStr;
         }
+      
+      function fsubmit(){
+      dateStr = OpenLayers.Util.getElement('calendar-inputForm1').value;
+      chlor.mergeNewParams({'time':dateStr});
+      sst.mergeNewParams({'time':dateStr});
+
+      }
 
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-43252602-2']);
@@ -66,13 +91,30 @@
     <h1 id=title>Near Real-Time Algal Bloom and Water Quality Monitoring Service<br>for the North Sea and Skagerrak Provided by NERSC</h1>
 
     <div id="map" class="smallmap"></div>
-    <p id="shortdesc" style='margin-top:0; font-size: 15'>
-        <b>Interactive map</b> with the latest weekly average of Chlorophyll-a from MODIS-AQUA
+    <p id="shortdesc" style='margin-top:0; font-size: 15; width:700px'>
+        <b>Interactive map</b> with the latest weekly average of Chlorophyll-a from MODIS-AQUA.
+        Select layer in the uper-left corner of the map.
+        Select date: <input type=text size=10 name=date1 value='' id='calendar-inputForm1' style='background-color: #5af; font-weight:bold;'>
+    <!-- INSERT CALENDAR BELOW -->
+    <script>
+        Calendar.setup({
+             animation : false,
+             bottomBar : false,
+         selectionType : Calendar.SEL_SINGLE,
+               trigger : 'calendar-inputForm1',
+            inputField : 'calendar-inputForm1',
+            onSelect   : function() { this.hide(); fsubmit(); },
+            dateFormat : '%Y-%m-%d'
+        });
+    </script>
+    <!-- INSERT CALENDAR ABOVE -->
+
+ 
     </p>
 
 <div id=l3link style='position: absolute; top:120; left: 750px; width: 400px'>
-<h1> View time series of products </h1>
-<table style='border: 1px solid'>
+<h1> View time series of products in advanced viewer</h1>
+<table style='border: 1px solid; width:400px; font-size: 16;' >
     <tr>
         <th>Daily</th><th>Weekly</th>
     </tr>

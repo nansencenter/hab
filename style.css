@@ -106,10 +106,7 @@ h6 {
 table, th, td {
     border: 1px solid #55aaff;
 }
-table {
-    width: 400px;
-    font-size: 16;
-}
+
 th {
     background-color: #55aaff;
     color:white;
