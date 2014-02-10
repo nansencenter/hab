@@ -1,0 +1,11 @@
+#header_logo_img {
+    visibility: visible;
+    position: absolute;
+    top: 0px;
+    left: 600px;
+    border: solid 1px;
+    background-image:url('../images/hablogo.png');
+    background-repeat:no-repeat;
+    width: 600px;
+    height: 140px;
+}
