@@ -12,6 +12,7 @@
 
     <script src="ol/OpenLayers.js"></script>
     <script type="text/javascript">
+
         var lon = 0;
         var lat = 60;
         var zoom = 5;
@@ -24,7 +25,7 @@
             Date.prototype.toYYYYMMDDString = function () {return isNaN (this) ? 'NaN' : [this.getFullYear(), this.getMonth() > 8 ? this.getMonth() + 1 : '0' + (this.getMonth() + 1), this.getDate() > 9 ? this.getDate() : '0' + this.getDate()].join('-')}
             
             var cdate = new Date().getTime();
-            var pdate = new Date(cdate - 6 * 24 * 60 * 60 * 1000);
+            var pdate = new Date(cdate - 2 * 24 * 60 * 60 * 1000);
             var pdateStr = pdate.toYYYYMMDDString();
             tomcats = document.getElementsByName("tomcat")
             for (i=0; i < tomcats.length; i += 1) tomcats[i].href += "&time=" + pdateStr; 
@@ -36,21 +37,32 @@
 
             var osm = new OpenLayers.Layer.WMS( "OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0?", {layers: 'basic'});
 
-            chlor = new OpenLayers.Layer.WMS( "Chlorophyll-a",
-                    "http://tomcat.nersc.no:8080/ncWMS/wms",
-                        {layers: 'hab_7d/chlor_a',
+            CMEMS_ACRI_CHL = new OpenLayers.Layer.WMS( "CMEMS_ACRI_CHL",
+                    "http://cmems-oc.isac.cnr.it/thredds/wms/dataset-oc-atl-chl-multi-l4-oi_1km_daily-rt-v02",
+                        {layers: 'CHL',
                          transparent: true,
                          time: pdateStr} );
 
-            sst = new OpenLayers.Layer.WMS( "SST",
-                    "http://tomcat.nersc.no:8080/ncWMS/wms",
-                        {layers: 'hab_7d/SST',
+            CMEMS_IFREMER_SST = new OpenLayers.Layer.WMS( "CMEMS_IFREMER_SST",
+                    "http://cmems.isac.cnr.it/thredds/wms/IFREMER-NWS-SST-L4-NRT-OBS_FULL_TIME_SERIE",
+                        {layers: 'analysed_sst',
                          transparent: true,
-                         time: pdateStr} );
+                         time: pdateStr,
+                         styles: 'boxfill/ferret',
+                         COLORSCALERANGE: '275,295'} );
+            CMEMS_IFREMER_SST.setVisibility(false);
 
-            sst.setVisibility(false);
+            CMEMS_MET_SST = new OpenLayers.Layer.WMS( "CMEMS_MET_SST",
+                    "http://thredds.met.no/thredds/wms/sea_ice/SIW-DMI-ARC-SEAICE_TEMP_V5-OBS/ice_temp_aggregated",
+                        {layers: 'analysed_st',
+                         transparent: true,
+                         format: 'image/png',
+                         styles: 'boxfill/ferret',
+                         time: pdateStr + 'T12:00:00.000Z',
+                         COLORSCALERANGE: '275,295'} );
+            CMEMS_MET_SST.setVisibility(false);
 
-            map.addLayers([osm, chlor, sst]);
+            map.addLayers([osm, CMEMS_ACRI_CHL, CMEMS_IFREMER_SST, CMEMS_MET_SST]);
             map.setBaseLayer(osm);
 
             map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
@@ -61,9 +73,8 @@
       
       function fsubmit(){
       dateStr = OpenLayers.Util.getElement('calendar-inputForm1').value;
-      chlor.mergeNewParams({'time':dateStr});
-      sst.mergeNewParams({'time':dateStr});
-
+      CMEMS_ACRI_CHL.mergeNewParams({'time':dateStr});
+      CMEMS_IFREMER_SST.mergeNewParams({'time':dateStr});
       }
 
       var _gaq = _gaq || [];
@@ -88,12 +99,12 @@
     </style>
 </head>
 <body onload="init()">
-    <h1 id=title>Near Real-Time Algal Bloom and Water Quality Monitoring Service<br>for the North Sea and Skagerrak Provided by NERSC</h1>
+    <h1 id=title>Near Real-Time Algal Bloom Monitoring Service for North Atlantic</h1>
 
     <div id="map" class="smallmap"></div>
     <p id="shortdesc" style='margin-top:0; font-size: 15; width:700px'>
-        <b>Interactive map</b> with the latest weekly average of Chlorophyll-a from MODIS-AQUA.
-        Select layer in the uper-left corner of the map.
+        The latest weekly average of chlorophyll-a surface concentraion and sea surface temperature from Copernicus Marine Environmental Service <a href=http://marine.copernicus.eu/>(CMEMS)</a>.
+        Select layers in the uper-left corner of the map. <br>
         Select date: <input type=text size=10 name=date1 value='' id='calendar-inputForm1' style='background-color: #5af; font-weight:bold;'>
     <!-- INSERT CALENDAR BELOW -->
     <script>
@@ -108,31 +119,7 @@
         });
     </script>
     <!-- INSERT CALENDAR ABOVE -->
-
- 
     </p>
-
-<div id=l3link style='position: absolute; top:120; left: 750px; width: 400px'>
-<h1> View time series of products in advanced viewer</h1>
-<table style='border: 1px solid; width:400px; font-size: 16;' >
-    <tr>
-        <th>Daily</th><th>Weekly</th>
-    </tr>
-    <tr>
-        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></td>
-        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></td>
-    </tr>
-    <tr>
-        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></td>
-        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></td>
-    </tr>
-    <tr>
-        <td><a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></td>
-        <td><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></td>
-    </tr>
-
-</table>
-</div>
 
 <div id=text style='width: 500px ; border: 1px solid gray'>
     <p>
@@ -142,19 +129,13 @@
     The service has been developed from use of the NASA SeaWiFS in 1998 and from 2006 to use the ESA MERIS EO sensor, incorporating also data from other satellite EO sensors and forecasts from numerical ocean models.
     </p>
     <p>
-    The EO based service concept is based on both standard products and of in-house processing algorithms tuned to regional water conditions, providing information about the surface distribution of:
+    Nowadays the service is based on operational products from the Copernicus Marine Environmental Service:
     </p>
     <ul>
-        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">Chlorophyll-a</a></li>
-        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/cdom_a&elevation=0&scale=0.1,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Yellow substance</a></li>
-        <li><a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/SST&elevation=0&scale=-2,15.0&bbox=-8.49036,51.005356,18.490359,65.994644">Sea Surface Temperature</a></li>
+        <li><a href="http://marine.copernicus.eu/services-portfolio/access-to-products/?option=com_csw&view=details&product_id=OCEANCOLOUR_ATL_CHL_L4_NRT_OBSERVATIONS_009_037">CMEMS_ACRI_CHL</a></li>
+        <li><a href="http://marine.copernicus.eu/services-portfolio/access-to-products/?option=com_csw&view=details&product_id=SST_NWS_SST_L4_NRT_OBSERVATIONS_010_003">CMEMS_IFREMER_CHL</a></li>
+        <li><a href="http://marine.copernicus.eu/services-portfolio/access-to-products/?option=com_csw&view=details&product_id=SEAICE_ARC_SEAICE_L4_NRT_OBSERVATIONS_011_008">CMEMS_MET_SST</a></li>
     </ul>
-    <p>    
-    All data products are generated as <a href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_1d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">daily images</a> and <a name=tomcat href="http://tomcat.nersc.no:8080/ncWMS/godiva2hab.html?menu=hab&layer=hab_7d/chlor_a&elevation=0&scale=0.1,10.0&bbox=-8.49036,51.005356,18.490359,65.994644">weekly averages</a> (in order to reduce the impact of the cloud cover limitation.)
-    </p>
-    
-    <p>You can find files used for generation of the maps in the <a href=http://web.nersc.no/project/maires/sadweb.py?catalog=MODIS_STD&show_CHL=on> L2 viewer</a></p>
-
     <p>For further information contact <a href='mailto:lasse.pettersson@nersc.no'>lasse.pettersson(at)nersc.no</a></p>
 </div>
 
